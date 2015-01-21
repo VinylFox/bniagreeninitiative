@@ -1,7 +1,7 @@
 {
-  "name": "Node.js Getting Started",
-  "description": "A barebones Node.js app using Express 4",
-  "repository": "https://github.com/heroku/node-js-getting-started",
-  "logo": "http://node-js-sample.herokuapp.com/node.svg",
+  "name": "The BNIA Green Initiative Map",
+  "description": "The BNIA Green Initiative Map",
+  "repository": "https://github.com/VinylFox/bniagreeninitiative",
+  "logo": "http://bniagreeninitiative.herokuapp.com/node.svg",
   "keywords": ["node", "express", "static"]
 }
