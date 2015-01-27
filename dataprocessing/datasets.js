@@ -35,7 +35,7 @@
 */
 
 var fs = require('fs');
-var csv = require('csv-stream');
+var csv = require('csv-parse');
 var async = require('async');
 
 var queue = [];
@@ -50,9 +50,10 @@ MongoClient.connect('mongodb://127.0.0.1:27017/bniagreeninitiative', function(er
 	if (err1) throw err1;
 
 	var collection = db.collection('sites');
-	var cvsrs = csv.createStream({
+	var cvsrs = csv({
 		delimiter: ',',
-		quote: '"'
+		quote: '"',
+		columns: true
 	});
 	var rs = fs.createReadStream('./data/BCDPW_sites_v3.csv', {
 			autoClose: true
