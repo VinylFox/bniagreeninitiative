@@ -80,9 +80,11 @@ MongoClient.connect('mongodb://127.0.0.1:27017/bniagreeninitiative', function(er
 						console.log('result of find has no error');
 						if (result != null) {
 							console.log('Updating existing site for ' + data.site_id);
-							result.geometry = {
-								"type": "Point",
-								"coordinates": [parseFloat(data.POINT_X), parseFloat(data.POINT_Y)]
+							if (parseFloat(data.POINT_X)) {
+								result.geometry = {
+									"type": "Point",
+									"coordinates": [parseFloat(data.POINT_X), parseFloat(data.POINT_Y)]
+								}
 							}
 							result.properties = data;
 							collection.update({
@@ -98,9 +100,11 @@ MongoClient.connect('mongodb://127.0.0.1:27017/bniagreeninitiative', function(er
 								var newitem = {};
 								newitem._id = data.site_id;
 								newitem.properties = data;
-								newitem.geometry = {
-									"type": "Point",
-									"coordinates": [parseFloat(data.POINT_X), parseFloat(data.POINT_Y)]
+								if (parseFloat(data.POINT_X)) {
+									newitem.geometry = {
+										"type": "Point",
+										"coordinates": [parseFloat(data.POINT_X), parseFloat(data.POINT_Y)]
+									}
 								}
 								collection.insert(newitem, {
 									w: 1

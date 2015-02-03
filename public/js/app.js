@@ -23,9 +23,19 @@ config.cityOutlineGeoJson = {
 };
 
 config.defaultMapCenter = {
-	lat: 38.792626957868904,
-	lon: -76.43463134765625,
-	zoom: 8
+	lat: 39.2854197594374,
+	lon: -76.61796569824219,
+	zoom: 12
+};
+
+config.flickr = {
+	key: "c6e9e1d37f7deffa5b5e1705c6464c0f",
+	URL: "https://api.flickr.com/services/rest/?text=&user_id=[USER]&method=flickr.photosets.getPhotos&api_key=[KEY]&photoset_id=[PHOTOSET]&extras=description,tags,machine_tags,url_sq,url_m&format=json&per_page=[PER_PAGE]",
+	users: [{
+		user: "100324530@N02",
+		photoset: "72157635087018134"
+	}],
+	pageSize: 100,
 };
 
 $(window).resize(function() {

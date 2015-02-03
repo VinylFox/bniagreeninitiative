@@ -12,9 +12,15 @@ Data.prototype.connect = function(cb) {
     if (err) throw err;
     console.log("Connected to database");
 
-    var col = db.collection('property');
+    var col = db.collection('sites');
     col.ensureIndex({
       "geometry": "2dsphere"
+    }, function() {
+      console.log(arguments);
+    });
+    col.ensureIndex({
+      "properties.site_name": "text",
+      "properties.address": "text"
     }, function() {
       console.log(arguments);
     });

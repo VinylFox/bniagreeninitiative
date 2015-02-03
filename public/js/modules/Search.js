@@ -21,10 +21,7 @@ var Search = React.createClass({
 	doSearch: function(term) {
 		var me = this;
 		$.ajax({
-			url: "/api/owner",
-			data: {
-				owner_name: term
-			}
+			url: "/api/sites?search=" + term
 		}).done(function(data) {
 			console.log(data);
 			me.setState({
@@ -52,7 +49,8 @@ var Search = React.createClass({
 			React.DOM.div(null,
 				React.DOM.input({
 					onChange: this.onChange,
-					value: this.state.term
+					value: this.state.term,
+					placeholder: 'Address or Keyword'
 				})
 			)
 		);

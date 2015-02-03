@@ -32,6 +32,16 @@ Api.prototype.sites = function(req, res, cb) {
 			var bounds = (resp.data[0] && resp.data[0].geometry && resp.data[0].geometry.coordinates) ? resp.data[0].geometry.coordinates : [];
 			me.doBoundsSearch(req, res, cb, bounds, 'sites');
 		});
+	} else if (req.query.search) {
+		this.data.query(res, 'sites', {
+			'$text': {
+				'$search': req.query.search
+			}
+		}, 'geojson', cb);
+	} else if (req.query.gpb_type) {
+		this.data.query(res, 'sites', {
+			'properties.gpb_type': req.query.gpb_type
+		}, 'geojson', cb);
 	} else {
 		this.data.query(res, 'sites', {}, 'geojson', cb);
 	}
@@ -40,7 +50,16 @@ Api.prototype.sites = function(req, res, cb) {
 
 Api.prototype.watersheds = function(req, res, cb) {
 
-	this.data.query(res, 'watersheds', {}, 'geojson', cb);
+	this.doBoundsSearch(req, res, cb, [
+		[-76.711293669970217, 39.371957030672938],
+		[-76.52967423510151, 39.371971900043278],
+		[-76.529858300949158, 39.209622953304475],
+		[-76.549725312649713, 39.197233450625106],
+		[-76.583673126628199, 39.208120531796183],
+		[-76.61161075881013, 39.234394547529099],
+		[-76.711161349110256, 39.277838496606982],
+		[-76.711293669970217, 39.371957030672938]
+	], 'watersheds', 'LineString');
 
 };
 
@@ -69,13 +88,13 @@ Api.prototype.doBoxSearch = function(req, res, cb, collection) {
 
 };
 
-Api.prototype.doBoundsSearch = function(req, res, cb, bounds, collection) {
+Api.prototype.doBoundsSearch = function(req, res, cb, bounds, collection, type) {
 
 	var query = {
 		"geometry": {
 			"$geoIntersects": {
 				"$geometry": {
-					type: "Polygon",
+					type: (type) ? type : "Polygon",
 					coordinates: bounds
 				}
 			}
