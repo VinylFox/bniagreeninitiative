@@ -2,7 +2,7 @@ var express = require('express');
 var Api = require('./app/api.js');
 var app = express();
 
-var mongoUri = process.env.MONGOHQ_URL || 'mongodb://localhost/bniagreeninitiative';
+var mongoUri = process.env.MONGOSOUP_URL || 'mongodb://localhost/bniagreeninitiative';
 
 app.set('view engine', 'jade');
 
