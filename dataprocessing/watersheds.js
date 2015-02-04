@@ -6,8 +6,9 @@ process.on('uncaughtException', function(error) {
 });
 
 var MongoClient = require('mongodb').MongoClient;
+var mongoUri = process.env.MONGOSOUP_URL || 'mongodb://localhost/bniagreeninitiative';
 
-MongoClient.connect('mongodb://127.0.0.1:27017/bniagreeninitiative', function(err1, db) {
+MongoClient.connect(mongoUri, function(err1, db) {
   if (err1) throw err1;
 
   var collection = db.collection('watersheds');
