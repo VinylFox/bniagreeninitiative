@@ -62,71 +62,81 @@ MongoClient.connect('mongodb://127.0.0.1:27017/bniagreeninitiative', function(er
 			console.error(err);
 		})
 		.on('end', function() {
+			queue.push({
+				done: true
+			});
 			async.eachSeries(queue, function(data, callback) {
 
-				console.log(data);
+				if (data.done) {
+					console.log('done');
+					process.exit(1);
+					setImmediate(function() {
+						callback();
+					});
+				} else {
 
-				console.log(data.site_id);
-				collection.findOne({
-					_id: data.site_id
-				}, function(err, result) {
-					console.log('result of find being processed');
-					if (err) {
-						console.log(err);
-						setImmediate(function() {
-							callback();
-						});
-					} else {
-						console.log('result of find has no error');
-						if (result != null) {
-							console.log('Updating existing site for ' + data.site_id);
-							if (parseFloat(data.POINT_X)) {
-								result.geometry = {
-									"type": "Point",
-									"coordinates": [parseFloat(data.POINT_X), parseFloat(data.POINT_Y)]
-								}
-							}
-							result.properties = data;
-							collection.update({
-								_id: data.site_id
-							}, result, function() {
-								setImmediate(function() {
-									callback();
-								});
+					console.log(data.site_id);
+					collection.findOne({
+						_id: data.site_id
+					}, function(err, result) {
+						console.log('result of find being processed');
+						if (err) {
+							console.log(err);
+							setImmediate(function() {
+								callback();
 							});
 						} else {
-							if (result == null) {
-								console.log('No site exists yet, adding one for ' + data.site_id);
-								var newitem = {};
-								newitem._id = data.site_id;
-								newitem.properties = data;
+							console.log('result of find has no error');
+							if (result != null) {
+								console.log('Updating existing site for ' + data.site_id);
 								if (parseFloat(data.POINT_X)) {
-									newitem.geometry = {
+									result.geometry = {
 										"type": "Point",
 										"coordinates": [parseFloat(data.POINT_X), parseFloat(data.POINT_Y)]
 									}
 								}
-								collection.insert(newitem, {
-									w: 1
-								}, function(err, result2) {
-									if (err) {
-										console.log(err);
-									} else {
-										console.log(result2[0].site_id);
-									}
+								result.properties = data;
+								collection.update({
+									_id: data.site_id
+								}, result, function() {
 									setImmediate(function() {
 										callback();
 									});
 								});
 							} else {
-								console.log('Result is something else : ' + result);
-								setImmediate(function() {
-									callback();
-								});
+								if (result == null) {
+									console.log('No site exists yet, adding one for ' + data.site_id);
+									var newitem = {};
+									newitem._id = data.site_id;
+									newitem.properties = data;
+									if (parseFloat(data.POINT_X)) {
+										newitem.geometry = {
+											"type": "Point",
+											"coordinates": [parseFloat(data.POINT_X), parseFloat(data.POINT_Y)]
+										}
+									}
+									collection.insert(newitem, {
+										w: 1
+									}, function(err, result2) {
+										if (err) {
+											console.log(err);
+										} else {
+											console.log(result2[0].site_id);
+										}
+										setImmediate(function() {
+											callback();
+										});
+									});
+								} else {
+									console.log('Result is something else : ' + result);
+									setImmediate(function() {
+										callback();
+									});
+								}
 							}
 						}
-					}
-				});
+					});
+				}
 
 			});
 

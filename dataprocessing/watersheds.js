@@ -27,6 +27,7 @@ MongoClient.connect('mongodb://127.0.0.1:27017/bniagreeninitiative', function(er
     async.eachSeries(queue, function(data, callback) {
       if (data.done) {
         console.log('done');
+        process.exit(1);
         setImmediate(function() {
           callback();
         });
