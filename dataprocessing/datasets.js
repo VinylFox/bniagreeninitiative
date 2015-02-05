@@ -69,7 +69,7 @@ MongoClient.connect(mongoUri, function(err1, db) {
 
 				if (data.done) {
 					console.log('done');
-					process.exit(1);
+					process.exit(0);
 					setImmediate(function() {
 						callback();
 					});
