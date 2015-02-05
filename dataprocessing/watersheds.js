@@ -33,18 +33,15 @@ MongoClient.connect(mongoUri, function(err1, db) {
           callback();
         });
       } else {
-        console.log(data.properties.MDE8NAME);
         collection.findOne({
           _id: data.properties.MDE8DIGT
         }, function(err, result) {
-          console.log('result of find being processed');
           if (err) {
             console.log(err);
             setImmediate(function() {
               callback();
             });
           } else {
-            console.log('result of find has no error');
             if (result != null) {
               console.log('Updating existing watershed for ' + data.properties.MDE8NAME);
               result.geometry = data.geometry;
@@ -77,7 +74,6 @@ MongoClient.connect(mongoUri, function(err1, db) {
                   });
                 });
               } else {
-                console.log('Result is something else : ' + result);
                 setImmediate(function() {
                   callback();
                 });

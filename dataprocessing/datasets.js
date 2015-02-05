@@ -74,19 +74,15 @@ MongoClient.connect(mongoUri, function(err1, db) {
 						callback();
 					});
 				} else {
-
-					console.log(data.site_id);
 					collection.findOne({
 						_id: data.site_id
 					}, function(err, result) {
-						console.log('result of find being processed');
 						if (err) {
 							console.log(err);
 							setImmediate(function() {
 								callback();
 							});
 						} else {
-							console.log('result of find has no error');
 							if (result != null) {
 								console.log('Updating existing site for ' + data.site_id);
 								if (parseFloat(data.POINT_X)) {
@@ -128,7 +124,6 @@ MongoClient.connect(mongoUri, function(err1, db) {
 										});
 									});
 								} else {
-									console.log('Result is something else : ' + result);
 									setImmediate(function() {
 										callback();
 									});
