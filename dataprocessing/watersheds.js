@@ -6,7 +6,7 @@ process.on('uncaughtException', function(error) {
 });
 
 var MongoClient = require('mongodb').MongoClient;
-var mongoUri = process.env.MONGOSOUP_URL || 'mongodb://localhost/bniagreeninitiative';
+var mongoUri = process.env.MONGOLAB_URI || 'mongodb://localhost/bniagreeninitiative';
 
 MongoClient.connect(mongoUri, function(err1, db) {
   if (err1) throw err1;
