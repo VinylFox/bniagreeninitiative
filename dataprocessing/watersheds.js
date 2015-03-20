@@ -64,11 +64,6 @@ MongoClient.connect(mongoUri, function(err1, db) {
                 collection.insert(entry, {
                   w: 1
                 }, function(err, result2) {
-                  if (err) {
-                    console.log(err);
-                  } else {
-                    console.log(result2[0].properties.MDE8NAME);
-                  }
                   setImmediate(function() {
                     callback();
                   });

@@ -23,6 +23,9 @@ app.get('/api/:type', function(req, res) {
     case "watersheds":
       api.watersheds(req, res, cb);
       break;
+    case "neighborhoods":
+      api.neighborhoods(req, res, cb);
+      break;
     case "sites":
       api.sites(req, res, cb);
       break;

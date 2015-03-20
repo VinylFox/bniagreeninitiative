@@ -96,7 +96,7 @@ html, body {
   top: 60px;
   height: 100%;
   width: 350px;
-  z-index: 1001;
+  z-index: 999;
   border-radius: 0;
 }
 

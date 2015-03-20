@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "postinstall": "bower install && node dataprocessing/watersheds.js && node dataprocessing/datasets.js"
+    "postinstall": "bower install && node dataprocessing/watersheds.js && node dataprocessing/neighborhoods.js && node dataprocessing/datasets.js"
   },
   "dependencies": {
     "express": "~4.9.x",

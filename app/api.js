@@ -63,6 +63,12 @@ Api.prototype.watersheds = function(req, res, cb) {
 
 };
 
+Api.prototype.neighborhoods = function(req, res, cb) {
+
+	this.data.query(res, 'neighborhoods', {}, 'geojson', cb);
+
+};
+
 Api.prototype.doBoxSearch = function(req, res, cb, collection) {
 
 	if (!req.query.bbox) res.jsonp({

@@ -18,17 +18,11 @@ var MainMap = React.createClass({
 		this.createMap();
 		this.addTileLayer();
 		this.addWatersheds();
+		this.addNeighborhoods();
 		this.addCityOutline();
 		var ME = this;
 		$('a.sel').click(function(ev) {
 			ME.addGPBType(ev.target.classList[ev.target.classList.length - 1]);
-		});
-		$('.overlay').click(function(ev) {
-			if (ev.target.hasClass('watersheds')) {
-
-			} else if (ev.target.hasClass('city')) {
-
-			}
 		});
 	},
 	createMap: function() {
@@ -68,14 +62,16 @@ var MainMap = React.createClass({
 			props = shape.properties,
 			coords = shape.geometry.coordinates;
 
-		if (props.site_name) {
+			console.log(props);
+
+		if (props.site_name || props.bmp_type) {
 			this.popup
 				.setLatLng(e.latlng)
-				.setContent(props.site_name)
+				.setContent(props.site_name || props.bmp_type)
 				.openOn(this.map);
-		} else {
+		} else if (props.MDE8DIGT || props.Name) {
 			this.lastCoords = coords;
-			this.lastWatershed = props.MDE8DIGT;
+			this.lastWatershed = props.MDE8DIGT || props.Name;
 			this.map.fitBounds(e.target.getBounds());
 		}
 	},
@@ -84,15 +80,47 @@ var MainMap = React.createClass({
 		var ME = this;
 		$.get("/api/watersheds").success(function(data, status) {
 			ME.watersheds = L.geoJson(data, {
-				style: ME.getWatershedStyle,
+				style: {
+					fillColor: "#137B80",
+					weight: 2,
+					opacity: 1,
+					color: 'white',
+					dashArray: 3,
+					fillOpacity: 0.35
+				},
 				onEachFeature: ME.onEachFeature
 			}).addTo(ME.map);
 			$('.loading').hide();
-			L.control.layers(null, {
-				"City Boundary": ME.city,
-				"Watersheds": ME.watersheds
-			}).addTo(ME.map);
+			ME.addLayersControl();
 		});
+	},
+	addNeighborhoods: function() {
+		$('.loading').show();
+		var ME = this;
+		$.get("/api/neighborhoods").success(function(data, status) {
+			ME.neighborhoods = L.geoJson(data, {
+				style: {
+					fillColor: "#248724",
+					weight: 2,
+					opacity: 1,
+					color: 'white',
+					dashArray: 3,
+					fillOpacity: 0.35
+				},
+				onEachFeature: ME.onEachFeature
+			}).addTo(ME.map);
+			$('.loading').hide();
+			ME.addLayersControl();
+		});
+	},
+	addLayersControl: function() {
+		if (this.watersheds && this.neighborhoods) {
+			L.control.layers(null, {
+				"City Boundary": this.city,
+				"Watersheds": this.watersheds,
+				"Neighborhoods": this.neighborhoods
+			}).addTo(this.map);
+		}
 	},
 	addCityOutline: function() {
 		var ME = this;
@@ -108,7 +136,6 @@ var MainMap = React.createClass({
 			$('.loading').show();
 			$.get("/api/sites?watershed=" + this.lastWatershed).success(function(data, status) {
 				ME.sites = L.geoJson(data, {
-					style: ME.getWatershedStyle,
 					onEachFeature: ME.onEachFeature
 				}).addTo(ME.map);
 				$('.loading').hide();
@@ -136,22 +163,23 @@ var MainMap = React.createClass({
 			if (ME.gpbtype) {
 				ME.map.removeLayer(ME.gpbtype);
 			}
-			ME.gpbtype = L.geoJson(data).addTo(ME.map);
+			ME.gpbtype = L.geoJson(data, {
+				pointToLayer: function (feature, latlng) {
+		      return L.circleMarker(latlng, {
+					    radius: 4,
+					    fillColor: "#ff7800",
+					    color: "#000",
+					    weight: 1,
+					    opacity: 1,
+					    fillOpacity: 0.8
+					});
+		    },
+				onEachFeature: ME.onEachFeature
+			}).addTo(ME.map);
 			ME.map.fitBounds(ME.gpbtype.getBounds());
 		});
 	},
-	getWatershedStyle: function(feature) {
-		return {
-			fillColor: "#137B80",
-			weight: 2,
-			opacity: 1,
-			color: 'white',
-			dashArray: 3,
-			fillOpacity: 0.35
-		}
-	},
 	onEachFeature: function(feature, layer) {
-		console.log(feature);
 		layer.on({
 			mouseover: this.shapeHover,
 			mouseout: this.shapeMouseOut,
