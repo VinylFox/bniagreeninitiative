@@ -26,9 +26,37 @@ var MainMap = React.createClass({
 		});
 	},
 	createMap: function() {
+		var ME = this;
 		this.map = L.map('mainmap').setView([this.state.center.lat, this.state.center.lon], this.state.center.zoom);
 		this.fixMapSize();
 		this.popup = L.popup();
+		this.map.on('move', function() {
+		    // Construct an empty list to fill with onscreen markers.
+		    var inBounds = [],
+		    	html = '',
+		    // Get the map bounds - the top-left and bottom-right locations.
+		        bounds = ME.map.getBounds();
+
+		    // For each marker, consider whether it is currently visible by comparing
+		    // with the current map bounds.
+		    if (ME.gpbtype) {
+			    ME.gpbtype.eachLayer(function(marker) {
+			        if (bounds.contains(marker.getLatLng())) {
+			            inBounds.push(marker);
+			        }
+			    });
+			  }
+
+		    // use inBounds array to write to the html
+		    html += '<ul>';
+		    inBounds.forEach(function(itm){
+		    	var props = itm.feature.properties;
+		    	html += '<li><b>' + props.site_name + '</b><br/>' + props.bmp_type + '<br/>' + props.location + '</li>';
+		    });
+		    html += '</ul>';
+		    $('#propdetails > .location').html(html);
+		    
+		});
 	},
 	addTileLayer: function() {
 		L.tileLayer(this.props.tileServerUrl, {
@@ -166,7 +194,7 @@ var MainMap = React.createClass({
 			ME.gpbtype = L.geoJson(data, {
 				pointToLayer: function (feature, latlng) {
 		      return L.circleMarker(latlng, {
-					    radius: 4,
+					    radius: 6,
 					    fillColor: "#ff7800",
 					    color: "#000",
 					    weight: 1,

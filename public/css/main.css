@@ -181,6 +181,12 @@ html, body {
                  0px -5px 35px rgba(255,255,255,0.3);
 }
 
+.location {
+  overflow: scroll;
+  clear: both;
+  height: 100%;
+}
+
 .search {
   float: right;
   margin-right: 50px;
