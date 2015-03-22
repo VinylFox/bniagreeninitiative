@@ -104,6 +104,14 @@ html, body {
   position: absolute;
   bottom: 20px;
   left: 20px;
+    height: 170px; /*big enough for 150px thumbnail */
+}
+
+#hoodinfo_placeholder {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    display: none;
 }
 
 .info p {
