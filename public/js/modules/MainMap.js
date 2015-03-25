@@ -27,7 +27,9 @@ var MainMap = React.createClass({
 	},
 	createMap: function() {
 		var ME = this;
-		this.map = L.map('mainmap').setView([this.state.center.lat, this.state.center.lon], this.state.center.zoom);
+		/**removed zoom control to put it in a different location**/
+		this.map = L.map('mainmap',{zoomControl: false}).setView([this.state.center.lat, this.state.center.lon], this.state.center.zoom);
+		new L.Control.Zoom({position: 'topright'}).addTo(this.map);
 		this.fixMapSize();
 		this.popup = L.popup();
 		this.map.on('move', function() {

@@ -1,6 +1,14 @@
 var express = require('express');
 var Api = require('./app/api.js');
 var app = express();
+var fs = require('fs');
+var http = require('http').Server(app);
+var io = require('socket.io')(http);
+
+/** NEED TO FIND A WAY TO NOT STORE THIS STUFF IN CODE **/
+var $cloud_name = "dhoj0tmte";
+var $cloud_key = "711233532133578";
+var $cloud_secret = "SF3sNnow9Q98RfciZSBUZD5PlCk";
 
 var mongoUri = process.env.MONGOLAB_URI || 'mongodb://localhost/bniagreeninitiative';
 
@@ -46,3 +54,5 @@ app.get('/', function(request, response) {
 app.listen(app.get('port'), function() {
   console.log("Node app is running at localhost:" + app.get('port'));
 });
+
+http.listen(app.get('port'), function(){console.log("http listening on " + app.get('port'))});

@@ -4,15 +4,14 @@ block content
   div.masthead
     leaflet#navmap(width=50, height=50)
     div.title BNIA Green Initiative
-    div.search 
-      div.search-title Search:
-      div(style='float:right;') 
-        div#search
   div.mapcontain
     div#mainmap
     div.info.propinfo#propinfo
       div
     div.info.propdetails#propdetails
+      div.search
+        div.search-title Search:
+        div#search
       div.sitetypesel
         a.sel.icon.cmos(title="Community Managed Open Space")
         a.sel.icon.stormwater(title="Stormwater Management")
@@ -29,7 +28,7 @@ block content
       div.owner
       div.viol
       div.legal
-    div.info.hoodinfo#hoodinfo
+    div#footer
       div.owners
       div.types
       div.states
