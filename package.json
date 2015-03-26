@@ -14,9 +14,8 @@
     "bower": "^1.3.12",
     "async": "^0.9.0",
     "csv-parse": "^0.0.6",
-    "socket.io":"^0",
-    "cloudinary":"^0",
-    "fs":"^0"
+    "socket.io": "^1.3.5",
+    "cloudinary": "^1.1.2"
   },
   "engines": {
     "node": "0.10.x"
