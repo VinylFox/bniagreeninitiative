@@ -21,8 +21,6 @@ var mongoUri = process.env.MONGOLAB_URI || 'mongodb://localhost/bniagreeninitiat
 
 app.set('view engine', 'jade');
 
-app.set('port', (process.env.PORT || 5000));
-
 app.use('/public', express.static(__dirname + '/public'));
 
 app.use(express.static(__dirname + '/public'));
@@ -79,4 +77,4 @@ io.on('connection',function(socket){
   console.log("Node app is running at localhost:" + app.get('port'));
 });*/
 
-http.listen(5000, function(){console.log("http listening on 5000")});
+http.listen(process.env.PORT || 5000, function(){console.log("http listening on 5000")});
