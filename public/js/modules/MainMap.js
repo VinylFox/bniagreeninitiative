@@ -28,36 +28,40 @@ var MainMap = React.createClass({
 	createMap: function() {
 		var ME = this;
 		/**removed zoom control to put it in a different location**/
-		this.map = L.map('mainmap',{zoomControl: false}).setView([this.state.center.lat, this.state.center.lon], this.state.center.zoom);
-		new L.Control.Zoom({position: 'topright'}).addTo(this.map);
+		this.map = L.map('mainmap', {
+			zoomControl: false
+		}).setView([this.state.center.lat, this.state.center.lon], this.state.center.zoom);
+		new L.Control.Zoom({
+			position: 'topright'
+		}).addTo(this.map);
 		this.fixMapSize();
 		this.popup = L.popup();
 		this.map.on('move', function() {
-		    // Construct an empty list to fill with onscreen markers.
-		    var inBounds = [],
-		    	html = '',
-		    // Get the map bounds - the top-left and bottom-right locations.
-		        bounds = ME.map.getBounds();
+			// Construct an empty list to fill with onscreen markers.
+			var inBounds = [],
+				html = '',
+				// Get the map bounds - the top-left and bottom-right locations.
+				bounds = ME.map.getBounds();
 
-		    // For each marker, consider whether it is currently visible by comparing
-		    // with the current map bounds.
-		    if (ME.gpbtype) {
-			    ME.gpbtype.eachLayer(function(marker) {
-			        if (bounds.contains(marker.getLatLng())) {
-			            inBounds.push(marker);
-			        }
-			    });
-			  }
+			// For each marker, consider whether it is currently visible by comparing
+			// with the current map bounds.
+			if (ME.gpbtype) {
+				ME.gpbtype.eachLayer(function(marker) {
+					if (bounds.contains(marker.getLatLng())) {
+						inBounds.push(marker);
+					}
+				});
+			}
 
-		    // use inBounds array to write to the html
-		    html += '<ul>';
-		    inBounds.forEach(function(itm){
-		    	var props = itm.feature.properties;
-		    	html += '<li><b>' + props.site_name + '</b><br/>' + props.bmp_type + '<br/>' + props.location + '</li>';
-		    });
-		    html += '</ul>';
-		    $('#propdetails > .location').html(html);
-		    
+			// use inBounds array to write to the html
+			html += '<ul>';
+			inBounds.forEach(function(itm) {
+				var props = itm.feature.properties;
+				html += '<li><b>' + props.site_name + '</b><br/>' + props.bmp_type + '<br/>' + props.location + '</li>';
+			});
+			html += '</ul>';
+			$('#propdetails > .location').html(html);
+
 		});
 	},
 	addTileLayer: function() {
@@ -92,7 +96,7 @@ var MainMap = React.createClass({
 			props = shape.properties,
 			coords = shape.geometry.coordinates;
 
-			console.log(props);
+		console.log(props);
 
 		if (props.site_name || props.bmp_type) {
 			this.popup
@@ -173,14 +177,34 @@ var MainMap = React.createClass({
 		}
 	},
 	addSearchResults: function(data) {
-		if (data.features.length === 0) {
-			return;
-		}
 		if (this.search) {
 			this.map.removeLayer(this.search);
 		}
-		this.search = L.geoJson(data).addTo(this.map);
-		this.map.fitBounds(this.search.getBounds());
+		if (this.gpbtype) {
+			this.map.removeLayer(this.gpbtype);
+		}
+		this.search = L.geoJson(data, {
+			pointToLayer: function(feature, latlng) {
+				return L.circleMarker(latlng, {
+					radius: 6,
+					fillColor: "#ff7800",
+					color: "#000",
+					weight: 1,
+					opacity: 1,
+					fillOpacity: 0.8
+				});
+			}
+		}).addTo(this.map);
+		if (data.features.length === 1) {
+			var ctr = new L.LatLng(data.features[0].geometry.coordinates[1], data.features[0].geometry.coordinates[0]);
+			this.map.setView(ctr, 17);
+		} else {
+			var bounds = this.search.getBounds();
+			this.map.fitBounds(bounds);
+		}
+	},
+	boundsSize: function(bounds) {
+		return bounds.getNorthWest().distanceTo(bounds.getSouthEast()).toFixed(0);
 	},
 	addGPBType: function(type) {
 		var ME = this;
@@ -194,16 +218,16 @@ var MainMap = React.createClass({
 				ME.map.removeLayer(ME.gpbtype);
 			}
 			ME.gpbtype = L.geoJson(data, {
-				pointToLayer: function (feature, latlng) {
-		      return L.circleMarker(latlng, {
-					    radius: 6,
-					    fillColor: "#ff7800",
-					    color: "#000",
-					    weight: 1,
-					    opacity: 1,
-					    fillOpacity: 0.8
+				pointToLayer: function(feature, latlng) {
+					return L.circleMarker(latlng, {
+						radius: 6,
+						fillColor: "#ff7800",
+						color: "#000",
+						weight: 1,
+						opacity: 1,
+						fillOpacity: 0.8
 					});
-		    },
+				},
 				onEachFeature: ME.onEachFeature
 			}).addTo(ME.map);
 			ME.map.fitBounds(ME.gpbtype.getBounds());

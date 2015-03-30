@@ -18,17 +18,45 @@ var Search = React.createClass({
 	componentDidMount: function() {
 
 	},
+	zipcodeRe: /^\d{5}((-|\s)?\d{4})?$/,
+	addressRe: /^[ \w]{3,}([A-Za-z]\.)?([ \w]*\#\d+)?(\r\n| )[ \w]{3,},\x20[A-Za-z]{2}\x20\d{5}(-\d{4})?$/,
 	doSearch: function(term) {
-		var me = this;
-		$.ajax({
-			url: "/api/sites?search=" + term
-		}).done(function(data) {
-			console.log(data);
-			me.setState({
-				items: data.features
+		var me = this,
+			searchType = 'search';
+
+		if (me.addressRe.test(term)) {
+			searchType = 'address';
+		} else if (me.zipcodeRe.test(term)) {
+			searchType = 'zipcode';
+		}
+
+		if (searchType === 'search') {
+			$.ajax({
+				url: "/api/sites?" + searchType + "=" + term
+			}).done(function(data) {
+				me.setState({
+					items: data.features
+				});
+				if (data.features.length > 0) {
+					me.props.map.addSearchResults.call(me.props.map, data);
+				}
 			});
-			me.props.map.addSearchResults.call(me.props.map, data);
-		});
+		} else {
+			geocoder = new google.maps.Geocoder();
+			geocoder.geocode({
+					address: term
+				},
+				function(result) {
+					var dialog, len, point;
+					if (result.length > 1) {
+						alert("Multiple matches were found.  Please provide a more specific address. ie: '3600 Roland Ave'");
+					} else {
+						ctr = new L.LatLng(result[0].geometry.location.lat(), result[0].geometry.location.lng());
+						me.props.map.map.setView(ctr, 17);
+					}
+				}
+			);
+		}
 	},
 	onChange: function(e) {
 		var me = this,
