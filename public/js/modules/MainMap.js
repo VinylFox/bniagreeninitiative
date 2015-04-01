@@ -114,6 +114,7 @@ var MainMap = React.createClass({
 		if (props.site_id) {
 			html = "<h2>" + (props.site_name || props.address) + "</h2></br>" +
 				"Location: " + (props.location || 'N/A') + "</br>" +
+				"Address: " + (props.address || 'N/A') + "</br>" +
 				"BMP Type: " + props.bmp_type + "</br>" +
 				"Status: " + (props.status || 'Unknown') + "</br>" +
 				((props.url_m) ? "<img width=200 src='" + props.url_m + "'>" : "--- No Photo ---") + "</br>" +
