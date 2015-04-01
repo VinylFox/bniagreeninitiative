@@ -22,7 +22,9 @@ var MainMap = React.createClass({
 		this.addCityOutline();
 		var ME = this;
 		$('a.sel').click(function(ev) {
-			ME.addGPBType(ev.target.classList[ev.target.classList.length - 1]);
+			$('a.sel').removeClass('selected');
+			$(ev.target).addClass('selected');
+			ME.addGPBType(ev.target.classList[ev.target.classList.length - 2]);
 		});
 	},
 	createMap: function() {
@@ -53,16 +55,27 @@ var MainMap = React.createClass({
 				});
 			}
 
+			if (ME.search) {
+				ME.search.eachLayer(function(marker) {
+					if (bounds.contains(marker.getLatLng())) {
+						inBounds.push(marker);
+					}
+				});
+			}
+
 			// use inBounds array to write to the html
-			html += '<ul>';
-			inBounds.forEach(function(itm) {
-				var props = itm.feature.properties;
-				html += '<li><b>' + props.site_name + '</b><br/>' + props.bmp_type + '<br/>' + props.location + '</li>';
-			});
-			html += '</ul>';
-			$('#propdetails > .location').html(html);
+			ME.addResultsList(inBounds);
 
 		});
+	},
+	addResultsList: function(results) {
+		var html = '<ul>';
+		results.forEach(function(itm) {
+			var props = (itm.feature) ? itm.feature.properties : itm.properties;
+			html += '<li>' + ((props.url_sq) ? "<img width=50 src='" + props.url_m + "'>" : "") + '<b>' + props.site_name + '</b><br/>' + props.address + '</li>';
+		});
+		html += '</ul>';
+		$('#propdetails > .location').html(html);
 	},
 	addTileLayer: function() {
 		L.tileLayer(this.props.tileServerUrl, {
@@ -98,10 +111,17 @@ var MainMap = React.createClass({
 
 		console.log(props);
 
-		if (props.site_name || props.bmp_type) {
+		if (props.site_id) {
+			html = "<h2>" + (props.site_name || props.address) + "</h2></br>" +
+				"Location: " + (props.location || 'N/A') + "</br>" +
+				"BMP Type: " + props.bmp_type + "</br>" +
+				"Status: " + (props.status || 'Unknown') + "</br>" +
+				((props.url_m) ? "<img width=200 src='" + props.url_m + "'>" : "--- No Photo ---") + "</br>" +
+				"Responsible Party: " + (props.resp_party || "Unknown") + "</br>" +
+				"For more information, contact: " + (props.contact || "Unknown");
 			this.popup
 				.setLatLng(e.latlng)
-				.setContent(props.site_name || props.bmp_type)
+				.setContent(html)
 				.openOn(this.map);
 		} else if (props.MDE8DIGT || props.Name) {
 			this.lastCoords = coords;
@@ -193,7 +213,8 @@ var MainMap = React.createClass({
 					opacity: 1,
 					fillOpacity: 0.8
 				});
-			}
+			},
+			onEachFeature: this.onEachFeature
 		}).addTo(this.map);
 		if (data.features.length === 1) {
 			var ctr = new L.LatLng(data.features[0].geometry.coordinates[1], data.features[0].geometry.coordinates[0]);

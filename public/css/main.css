@@ -35,6 +35,15 @@ a img {
   border: none;
 }
 
+h2 {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.location ul li {
+  border-bottom: 1px solid gray;
+}
+
 .loading {
   line-height: 100px;
   text-align: center;
@@ -256,12 +265,17 @@ html, body {
 }
 
 .sel {
-  width: 30px;
+  width: 29px;
   height: 30px;
-  background-size: 30px;
+  background-size: 29px;
   float: left;
   margin: 7px 5px;
   cursor: pointer;
+}
+
+.selected {
+  border: 1px solid blue;
+  border-radius: 2px;
 }
 
 .inactive {
@@ -274,30 +288,30 @@ html, body {
 }
 
 .icon.stormwater {
-  background-position: 0 -30px;
+  background-position: 0 -29px;
 }
 
 .icon.cleangreen {
-  background-position: 0 -61px;
+  background-position: 0 -59px;
 }
 
 .icon.mixedgreen {
-  background-position: 0 -92px;
+  background-position: 0 -89px;
 }
 
 .icon.hoodpark {
-  background-position: 0 -123px;
+  background-position: 0 -118px;
 }
 
 .icon.greenparking {
-  background-position: 0 -153px;
+  background-position: 0 -147px;
 }
 
 .icon.urbanag {
-  background-position: 0 -184px;
+  background-position: 0 -177px;
 }
 
 .icon.urbanforest {
-  background-position: 0 -214px;
+  background-position: 0 -206px;
 }
 
