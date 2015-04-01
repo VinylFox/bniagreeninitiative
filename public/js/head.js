@@ -57,12 +57,13 @@ $socket.emit("clt_request_approved_image_data","");
 function get_photos_by_site(site,type){
     console.log($img_data);
     var site_imgs = $img_data[type][site];
-    if(site_imgs == 'undefined'){return false;}
-    else{
+    if(site_imgs){
         imgs = [];
         for(var i =0; i < site_imgs.length; i++){
             imgs.push(site_imgs[i].url);
         }
         return imgs;
+    } else {
+        return false;
     }
 }
