@@ -6,9 +6,9 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var cloudinary = require('cloudinary');
 
-var $cloud_name = process.env.CLOUD_NAME || "bnia-jfi";
-var $cloud_key = process.env.CLOUD_KEY || "334193561318986";
-var $cloud_secret = process.env.CLOUD_SECRET || "UlIFjo15Cm-33f3rBa9G4j1GqiY";
+var $cloud_name = "bnia-jfi"; //process.env.CLOUD_NAME ||
+var $cloud_key =  "334193561318986"; //process.env.CLOUD_KEY ||
+var $cloud_secret = "UlIFjo15Cm-33f3rBa9G4j1GqiY"; //process.env.CLOUD_SECRET ||
 
 var $image_height = 200;
 

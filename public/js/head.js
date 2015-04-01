@@ -4,6 +4,7 @@ var $dims = [];
 var $tags = [];
 var $index = 0;
 var $img_data = {};
+var $slider;
 $img_data.CG = {};
 $img_data.SW = {};
 
@@ -30,13 +31,24 @@ function autoresize_propdetails(){
     });
 }
 
+$socket.on("srv_transfer_approved_image_data",function(data){
+    $urls.push(data.url);
+    $dims.push({'width':parseInt(data.width),'height':parseInt(data.height)});
+    var tag = index + data.site;
+    $tags.push(tag);
+    if($img_data[data.type][data.site] == undefined){
+        $img_data[data.type][data.site] = [];
+    }
+    $img_data[data.type][data.site].push({'url':data.url, 'tag':tag});
+});
 
+$socket.on("srv_end_approved_image_data_transfer", function(){
+    var tags = [];
+    for(var i = 0; i < $urls.length; i++){
+        tags.push(i);
+    }
+    $slider = append_slider('my_slider','#footer',$urls,tags,$dims,$tags);
+});
 
+$socket.emit("clt_request_approved_image_data","");
 
-
-
-//autoresize_hoodinfo();
-//$(window).on('resize', function () {
-//    autoresize_hoodinfo();
-//});
-//make_hoodinfo_collapsible();
