@@ -34,12 +34,13 @@ function autoresize_propdetails(){
 $socket.on("srv_transfer_approved_image_data",function(data){
     $urls.push(data.url);
     $dims.push({'width':parseInt(data.width),'height':parseInt(data.height)});
-    var tag = index + data.site;
+    var tag = $index + data.site;
     $tags.push(tag);
     if($img_data[data.type][data.site] == undefined){
         $img_data[data.type][data.site] = [];
     }
     $img_data[data.type][data.site].push({'url':data.url, 'tag':tag});
+    console.log(data);
 });
 
 $socket.on("srv_end_approved_image_data_transfer", function(){
@@ -52,3 +53,16 @@ $socket.on("srv_end_approved_image_data_transfer", function(){
 
 $socket.emit("clt_request_approved_image_data","");
 
+
+function get_photos_by_site(site,type){
+    console.log($img_data);
+    var site_imgs = $img_data[type][site];
+    if(site_imgs == 'undefined'){return false;}
+    else{
+        imgs = [];
+        for(var i =0; i < site_imgs.length; i++){
+            imgs.push(site_imgs[i].url);
+        }
+        return imgs;
+    }
+}
