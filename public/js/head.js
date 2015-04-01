@@ -1,6 +1,5 @@
 var $socket = io();
-
-
+var $urls = [];
 
 
 function resize_propdetails(){
@@ -22,16 +21,6 @@ function autoresize_propdetails(){
     });
 }
 
-function make_hoodinfo_collapsible() {
-    $('#hoodinfo').click(function () {
-        $(this).slideToggle('slow');
-        $('#hoodinfo_placeholder').slideToggle('slow');
-    });
-    $('#hoodinfo_placeholder').click(function () {
-        $(this).slideToggle('slow');
-        $('#hoodinfo').slideToggle('slow');
-    });
-}
 
 
 

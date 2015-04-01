@@ -6,6 +6,8 @@
     "jquery-ui": "~1.11.4",
     "react": "~0.11.2",
     "slick-carousel": "https://github.com/kenwheeler/slick.git#~1.4.1",
-    "socket.io-client": "~1.3.5"
+    "socket.io-client": "~1.3.5",
+    "d3": "~3.5.5",
+    "pre-loader": "~0.4.0"
   }
 }
