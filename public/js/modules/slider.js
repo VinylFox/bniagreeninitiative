@@ -1,5 +1,4 @@
 function append_slider(id,container_id,img_srcs,tags,img_dims){
-    console.log(tags);
     var pic_margin = 10;
     var data,root,cont,slider,left,center,right,carousel,frames,pics,fdims,right_limit,current_pos;
     if(img_dims == undefined){get_img_dims();}else{initialize();}
@@ -100,12 +99,14 @@ function append_slider(id,container_id,img_srcs,tags,img_dims){
         pics = frames.append('img')
             .attr('class','slider_carousel_pic')
             .attr('src',function(d){return data[d].src})
-            .style('width',function(d){return data[d].scaled_width + 'px'});
+            .style('width',function(d){return data[d].scaled_width + 'px'})
+
 
         current_pos = 0;
 
         bind_buttons();
         bind_keys();
+        set_update_loop(1000);
     }
 
     function hide_node(tag){
@@ -146,7 +147,6 @@ function append_slider(id,container_id,img_srcs,tags,img_dims){
                 hide_node(tags[i]);
             }
         }
-        update();
     }
 
     function shift_left(pos_change){
@@ -220,6 +220,11 @@ function append_slider(id,container_id,img_srcs,tags,img_dims){
             right.transition().duration(100).style("background-color","#77AFD9");
             right.transition().delay(150).style("background-color","white");
         });
+    }
+
+    function set_update_loop(period){
+        var s = setInterval(update, period);
+        return s;
     }
 
     var ret = {};

@@ -36,6 +36,7 @@ $socket.on("srv_transfer_approved_image_data",function(data){
     $urls.push(data.url);
     $dims.push({'width':parseInt(data.width),'height':parseInt(data.height)});
     var tag = $index + data.site;
+    $index+=1;
     $tags.push(tag);
     if($tag_dict[data.site] === undefined){
         $tag_dict[data.site] = [tag];
