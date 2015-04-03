@@ -41,6 +41,7 @@ var MainMap = React.createClass({
 		this.map.on('move', function() {
 			// Construct an empty list to fill with onscreen markers.
 			var inBounds = [],
+				inBoundsSiteIds = [],
 				html = '',
 				// Get the map bounds - the top-left and bottom-right locations.
 				bounds = ME.map.getBounds();
@@ -51,6 +52,7 @@ var MainMap = React.createClass({
 				ME.gpbtype.eachLayer(function(marker) {
 					if (bounds.contains(marker.getLatLng())) {
 						inBounds.push(marker);
+						inBoundsSiteIds.push(marker.feature.properties.site_id);
 					}
 				});
 			}
@@ -59,12 +61,15 @@ var MainMap = React.createClass({
 				ME.search.eachLayer(function(marker) {
 					if (bounds.contains(marker.getLatLng())) {
 						inBounds.push(marker);
+						inBoundsSiteIds.push(marker.feature.properties.site_id);
 					}
 				});
 			}
 
 			// use inBounds array to write to the html
 			ME.addResultsList(inBounds);
+			change_photo_set(inBoundsSiteIds);
+
 
 		});
 	},
@@ -112,15 +117,35 @@ var MainMap = React.createClass({
 		console.log(props);
 
 		if (props.site_id) {
-			var urls = get_photos_by_site(props.site_id,'CG');
-			html = "<h2>" + (props.site_name || props.address) + "</h2></br>" +
-				"Location: " + (props.location || 'N/A') + "</br>" +
-				"Address: " + (props.address || 'N/A') + "</br>" +
-				"BMP Type: " + props.bmp_type + "</br>" +
-				"Status: " + (props.status || 'Unknown') + "</br>" +
-				((urls) ? "<img width=200 src='" + urls[0] + "'>" : "--- No Photo ---") + "</br>" +
-				"Responsible Party: " + (props.resp_party || "Unknown") + "</br>" +
-				"For more information, contact: " + (props.contact || "Unknown");
+				if(props.gpb_type == 'cmos'){
+					var urls = get_photos_by_site(props.site_id,'CG');
+					html = "<h2>" + (props.site_name || "UNNAMED SITE") + "</h2></br>" +
+					((urls) ? "<img width=200 src='" + urls[0] + "'>" : "<img width=200 src='/public/img/placeholder.png'>") + "</br>" +
+					"Location: " + (props.address || 'NO DATA') + "</br>" +
+					"Site Use: " + (props.site_use || "NO DATA") + "</br>" +
+					"Responsible Party: " + (props.resp_party || "NO DATA") + "</br>" +
+					"For more information, contact: " + (props.contact || "NO DATA");
+
+				}
+				if(props.gpb_type == 'stormwater'){
+					var urls = get_photos_by_site(props.site_id,'SW');
+					html = "<h2>" + (props.site_name || "UNNAMED SITE") + "</h2></br>" +
+					((urls) ? "<img width=200 src='" + urls[0] + "'>" : "<img width=200 src='/public/img/placeholder.png'>") + "</br>" +
+					"Location: " + (parseFloat(props.POINT_X).toFixed(6) + ", " + parseFloat(props.POINT_Y).toFixed(6) || 'NO DATA') + "</br>" +
+					"BMP Type: " + props.bmp_type + "</br>" +
+					"Status: " + (props.status || 'NO DATA');
+				}
+
+				/*var urls = get_photos_by_site(props.site_id,'CG');
+                console.log(urls[0]);
+                html = "<h2>" + (props.site_name || props.address) + "</h2></br>" +
+                    "Location: " + (props.location || 'N/A') + "</br>" +
+                    "Address: " + (props.address || 'N/A') + "</br>" +
+                    "BMP Type: " + props.bmp_type + "</br>" +
+                    "Status: " + (props.status || 'Unknown') + "</br>" +
+                    ((urls) ? "<img width=200 src='" + urls[0] + "'>" : "--- No Photo ---") + "</br>" +
+                    "Responsible Party: " + (props.resp_party || "Unknown") + "</br>" +
+                    "For more information, contact: " + (props.contact || "Unknown");*/
 			this.popup
 				.setLatLng(e.latlng)
 				.setContent(html)
@@ -199,6 +224,7 @@ var MainMap = React.createClass({
 		}
 	},
 	addSearchResults: function(data) {
+		console.log(data);
 		if (this.search) {
 			this.map.removeLayer(this.search);
 		}

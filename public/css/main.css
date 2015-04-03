@@ -286,3 +286,12 @@ html, body {
   background-position: 0 -206px;
 }
 
+.leaflet-popup-content{
+  width:250px;
+}
+
+.leaflet-popup-content img{
+  margin-left:25px;
+  margin-right:25px;
+  margin-bottom:10px;
+}

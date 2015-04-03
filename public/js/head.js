@@ -2,6 +2,7 @@ var $socket = io();
 var $urls = [];
 var $dims = [];
 var $tags = [];
+var $tag_dict = {};
 var $index = 0;
 var $img_data = {};
 var $slider;
@@ -36,19 +37,20 @@ $socket.on("srv_transfer_approved_image_data",function(data){
     $dims.push({'width':parseInt(data.width),'height':parseInt(data.height)});
     var tag = $index + data.site;
     $tags.push(tag);
+    if($tag_dict[data.site] === undefined){
+        $tag_dict[data.site] = [tag];
+    }
+    else{
+        $tag_dict[data.site].push(tag);
+    }
     if($img_data[data.type][data.site] == undefined){
         $img_data[data.type][data.site] = [];
     }
     $img_data[data.type][data.site].push({'url':data.url, 'tag':tag});
-    console.log(data);
 });
 
 $socket.on("srv_end_approved_image_data_transfer", function(){
-    var tags = [];
-    for(var i = 0; i < $urls.length; i++){
-        tags.push(i);
-    }
-    $slider = append_slider('my_slider','#footer',$urls,tags,$dims,$tags);
+    $slider = append_slider('my_slider','#footer',$urls,$tags,$dims);
 });
 
 $socket.emit("clt_request_approved_image_data","");
@@ -66,4 +68,22 @@ function get_photos_by_site(site,type){
     } else {
         return false;
     }
+}
+
+function get_tags_by_site_ids(site_ids){
+    res = [];
+    for(var i=0; i < site_ids.length; i++){
+        if($tag_dict[site_ids[i]] != undefined){
+            for(var j=0; j < $tag_dict[site_ids[i]].length; j++){
+                res.push($tag_dict[site_ids[i]][j]);
+            }
+        }
+    }
+    return res;
+}
+
+function change_photo_set(site_ids){
+
+    tags = get_tags_by_site_ids(site_ids);
+    $slider.display_set(tags);
 }
