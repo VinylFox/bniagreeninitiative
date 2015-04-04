@@ -19,6 +19,7 @@ var MainMap = React.createClass({
 		this.addTileLayer();
 		this.addWatersheds();
 		this.addNeighborhoods();
+		this.addCsas();
 		this.addCityOutline();
 		var ME = this;
 		$('a.sel').click(function(ev) {
@@ -183,12 +184,32 @@ var MainMap = React.createClass({
 			ME.addLayersControl();
 		});
 	},
+	addCsas: function() {
+		$('.loading').show();
+		var ME = this;
+		$.get("/api/csas").success(function(data, status) {
+			ME.csas = L.geoJson(data, {
+				style: {
+					fillColor: "#746575",
+					weight: 2,
+					opacity: 1,
+					color: 'white',
+					dashArray: 3,
+					fillOpacity: 0.35
+				},
+				onEachFeature: ME.onEachFeature
+			}).addTo(ME.map);
+			$('.loading').hide();
+			ME.addLayersControl();
+		});
+	},
 	addLayersControl: function() {
-		if (this.watersheds && this.neighborhoods) {
+		if (this.watersheds && this.neighborhoods && this.csas) {
 			L.control.layers(null, {
 				"City Boundary": this.city,
 				"Watersheds": this.watersheds,
-				"Neighborhoods": this.neighborhoods
+				"Neighborhoods": this.neighborhoods,
+				"Csas":this.csas
 			}).addTo(this.map);
 		}
 	},

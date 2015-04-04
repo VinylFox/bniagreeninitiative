@@ -27,6 +27,9 @@ app.get('/api/:type', function(req, res) {
     case "neighborhoods":
       api.neighborhoods(req, res, cb);
       break;
+    case "csas":
+      api.csas(req,res,cb);
+      break;
     case "sites":
       api.sites(req, res, cb);
       break;
