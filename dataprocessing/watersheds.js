@@ -20,6 +20,7 @@ MongoClient.connect(mongoUri, function(err1, db) {
       len = data.features.length;
     //console.log(len);
     for (var i = 0; i < len; i++) {
+      data.features[i].properties['datatype'] = 'watershed';
       queue.push(data.features[i]);
     }
     queue.push({

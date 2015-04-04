@@ -157,7 +157,7 @@ var MainMap = React.createClass({
 					opacity: 1,
 					color: 'white',
 					dashArray: 3,
-					fillOpacity: 0.35
+					fillOpacity: 0.20
 				},
 				onEachFeature: ME.onEachFeature
 			}).addTo(ME.map);
@@ -172,7 +172,7 @@ var MainMap = React.createClass({
 			ME.neighborhoods = L.geoJson(data, {
 				style: {
 					fillColor: "#248724",
-					weight: 2,
+					weight: 3,
 					opacity: 1,
 					color: 'white',
 					dashArray: 3,
@@ -190,12 +190,12 @@ var MainMap = React.createClass({
 		$.get("/api/csas").success(function(data, status) {
 			ME.csas = L.geoJson(data, {
 				style: {
-					fillColor: "#746575",
-					weight: 2,
+					fillColor: "#007DB6",
+					weight: 3,
 					opacity: 1,
 					color: 'white',
 					dashArray: 3,
-					fillOpacity: 0.35
+					fillOpacity: 0.65
 				},
 				onEachFeature: ME.onEachFeature
 			}).addTo(ME.map);

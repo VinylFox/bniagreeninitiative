@@ -92,6 +92,7 @@ MongoClient.connect(mongoUri, function(err1, db) {
 									}
 								}
 								result.properties = data;
+								result.properties.datatype = 'site';
 								collection.update({
 									_id: data.site_id
 								}, result, function() {
