@@ -135,17 +135,6 @@ var MainMap = React.createClass({
 					"BMP Type: " + props.bmp_type + "</br>" +
 					"Status: " + (props.status || 'NO DATA');
 				}
-
-				/*var urls = get_photos_by_site(props.site_id,'CG');
-                console.log(urls[0]);
-                html = "<h2>" + (props.site_name || props.address) + "</h2></br>" +
-                    "Location: " + (props.location || 'N/A') + "</br>" +
-                    "Address: " + (props.address || 'N/A') + "</br>" +
-                    "BMP Type: " + props.bmp_type + "</br>" +
-                    "Status: " + (props.status || 'Unknown') + "</br>" +
-                    ((urls) ? "<img width=200 src='" + urls[0] + "'>" : "--- No Photo ---") + "</br>" +
-                    "Responsible Party: " + (props.resp_party || "Unknown") + "</br>" +
-                    "For more information, contact: " + (props.contact || "Unknown");*/
 			this.popup
 				.setLatLng(e.latlng)
 				.setContent(html)
@@ -224,7 +213,6 @@ var MainMap = React.createClass({
 		}
 	},
 	addSearchResults: function(data) {
-		console.log(data);
 		if (this.search) {
 			this.map.removeLayer(this.search);
 		}

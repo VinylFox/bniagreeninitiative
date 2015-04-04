@@ -65,7 +65,8 @@ function append_slider(id,container_id,img_srcs,tags,img_dims){
 
 
         carousel = center.append('div')
-            .attr('class','slider_carousel');
+            .attr('class','slider_carousel')
+            .style('visibility','hidden');
         var mock_frame = carousel.append('div').attr('class','slider_carousel_frame');
         fdims = {};
         fdims.pad_left = parseInt(mock_frame.style('padding-left'));
@@ -95,7 +96,7 @@ function append_slider(id,container_id,img_srcs,tags,img_dims){
             .append('div')
             .attr('class','slider_carousel_frame')
             .style('width',function(d){return data[d].scaled_width + 'px';})
-            .style('left',function(d){return data[d].pos + 'px';});
+            .style('left',function(d){return data[d].pos + 'px';})
         pics = frames.append('img')
             .attr('class','slider_carousel_pic')
             .attr('src',function(d){return data[d].src})
@@ -227,10 +228,22 @@ function append_slider(id,container_id,img_srcs,tags,img_dims){
         return s;
     }
 
+    function add_click_event_function(fun){
+        frames.on('click',function(d){
+            fun(d);
+        })
+    }
+
+    function show(){
+        carousel.style('visibility','visible');
+    }
+
     var ret = {};
     ret.hide_node = hide_node;
     ret.show_node = show_node;
     ret.update = update;
     ret.display_set = display_set;
+    ret.show = show;
+    ret.add_click_event_function = add_click_event_function;
     return ret;
 }
