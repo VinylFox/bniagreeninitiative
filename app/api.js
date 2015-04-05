@@ -39,9 +39,13 @@ Api.prototype.sites = function(req, res, cb) {
 			}
 		}, 'geojson', cb);
 	} else if (req.query.gpb_type) {
-		this.data.query(res, 'sites', {
-			'properties.gpb_type': req.query.gpb_type
-		}, 'geojson', cb);
+		if (req.query.refinement) {
+
+		} else {
+			this.data.query(res, 'sites', {
+				'properties.gpb_type': req.query.gpb_type
+			}, 'geojson', cb);
+		}
 	} else {
 		this.data.query(res, 'sites', {}, 'geojson', cb);
 	}
@@ -112,5 +116,25 @@ Api.prototype.doBoundsSearch = function(req, res, cb, bounds, collection, type) 
 	this.data.query(res, collection, query, 'geojson', cb);
 
 };
+
+Api.prototype.refinements = function(req, res, cb, type, field) {
+	var query = [{
+		'$match': {
+			'properties.gpb_type': type
+		}
+	}, {
+		'$group': {
+			_id: '$properties.' + field
+		}
+	}];
+	query[0]['$match']['properties.' + field] = {
+		'$ne': ''
+	};
+
+	console.log(JSON.stringify(query));
+
+	this.data.aggregate(res, 'sites', query, 'json', cb);
+
+}
 
 module.exports = Api;

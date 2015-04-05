@@ -30,6 +30,24 @@ app.get('/api/:type', function(req, res) {
     case "sites":
       api.sites(req, res, cb);
       break;
+    case "refinements":
+      api.refinements(req, res, function(resp) {
+        var respa = {
+          data: []
+        };
+        resp.data.forEach(function(val) {
+          if (val._id) {
+            var vals = val._id.split(', ');
+            vals.forEach(function(vala) {
+              if (respa.data.indexOf(vala) == -1) {
+                respa.data.push(vala);
+              }
+            });
+          }
+        });
+        res.json(respa);
+      }, req.query.type, req.query.field);
+      break;
     default:
       cb({
         data: [],
@@ -47,4 +65,3 @@ app.get('/', function(request, response) {
 http.listen(process.env.PORT || 5000, function() {
   console.log("App listening on " + (process.env.PORT || 5000));
 });
-
