@@ -19,6 +19,7 @@ var MainMap = React.createClass({
 		this.addTileLayer();
 		this.addWatersheds();
 		this.addNeighborhoods();
+		this.addCsas();
 		this.addCityOutline();
 		var ME = this;
 		$('a.sel').click(function(ev) {
@@ -135,17 +136,6 @@ var MainMap = React.createClass({
 					"BMP Type: " + props.bmp_type + "</br>" +
 					"Status: " + (props.status || 'NO DATA');
 				}
-
-				/*var urls = get_photos_by_site(props.site_id,'CG');
-                console.log(urls[0]);
-                html = "<h2>" + (props.site_name || props.address) + "</h2></br>" +
-                    "Location: " + (props.location || 'N/A') + "</br>" +
-                    "Address: " + (props.address || 'N/A') + "</br>" +
-                    "BMP Type: " + props.bmp_type + "</br>" +
-                    "Status: " + (props.status || 'Unknown') + "</br>" +
-                    ((urls) ? "<img width=200 src='" + urls[0] + "'>" : "--- No Photo ---") + "</br>" +
-                    "Responsible Party: " + (props.resp_party || "Unknown") + "</br>" +
-                    "For more information, contact: " + (props.contact || "Unknown");*/
 			this.popup
 				.setLatLng(e.latlng)
 				.setContent(html)
@@ -194,12 +184,32 @@ var MainMap = React.createClass({
 			ME.addLayersControl();
 		});
 	},
+	addCsas: function() {
+		$('.loading').show();
+		var ME = this;
+		$.get("/api/csas").success(function(data, status) {
+			ME.csas = L.geoJson(data, {
+				style: {
+					fillColor: "#746575",
+					weight: 2,
+					opacity: 1,
+					color: 'white',
+					dashArray: 3,
+					fillOpacity: 0.35
+				},
+				onEachFeature: ME.onEachFeature
+			}).addTo(ME.map);
+			$('.loading').hide();
+			ME.addLayersControl();
+		});
+	},
 	addLayersControl: function() {
-		if (this.watersheds && this.neighborhoods) {
+		if (this.watersheds && this.neighborhoods && this.csas) {
 			L.control.layers(null, {
 				"City Boundary": this.city,
 				"Watersheds": this.watersheds,
-				"Neighborhoods": this.neighborhoods
+				"Neighborhoods": this.neighborhoods,
+				"Csas":this.csas
 			}).addTo(this.map);
 		}
 	},
@@ -224,7 +234,6 @@ var MainMap = React.createClass({
 		}
 	},
 	addSearchResults: function(data) {
-		console.log(data);
 		if (this.search) {
 			this.map.removeLayer(this.search);
 		}

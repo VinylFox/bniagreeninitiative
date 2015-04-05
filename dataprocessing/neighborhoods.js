@@ -18,7 +18,7 @@ MongoClient.connect(mongoUri, function(err1, db) {
 	fs.readFile('./data/neighborhoods.geojson', 'utf-8', function(err2, contents) {
 		var data = JSON.parse(contents),
 			len = data.features.length;
-		//console.log(len);
+		console.log(len);
 		for (var i = 0; i < len; i++) {
 			queue.push(data.features[i]);
 		}

@@ -3,6 +3,7 @@ var $urls = [];
 var $dims = [];
 var $tags = [];
 var $tag_dict = {};
+var $tags_to_ids = {};
 var $index = 0;
 var $img_data = {};
 var $slider;
@@ -52,13 +53,16 @@ $socket.on("srv_transfer_approved_image_data",function(data){
 
 $socket.on("srv_end_approved_image_data_transfer", function(){
     $slider = append_slider('my_slider','#footer',$urls,$tags,$dims);
+    var b = function(d){
+        console.log(d);
+    }
+    $slider.add_click_event_function(b);
 });
 
 $socket.emit("clt_request_approved_image_data","");
 
 
 function get_photos_by_site(site,type){
-    console.log($img_data);
     var site_imgs = $img_data[type][site];
     if(site_imgs){
         imgs = [];
@@ -84,7 +88,11 @@ function get_tags_by_site_ids(site_ids){
 }
 
 function change_photo_set(site_ids){
-
     tags = get_tags_by_site_ids(site_ids);
+    $slider.show();
     $slider.display_set(tags);
+}
+
+function extract_site_id(tag_id){
+
 }
