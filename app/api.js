@@ -39,8 +39,26 @@ Api.prototype.sites = function(req, res, cb) {
 			}
 		}, 'geojson', cb);
 	} else if (req.query.gpb_type) {
-		if (req.query.refinement) {
-
+		if (req.query.filter) {
+			if (req.query.gpb_type == 'cmos') {
+				this.data.query(res, 'sites', {
+					'$and': [{
+						'properties.gpb_type': req.query.gpb_type
+					}, {
+						'properties.site_use': {
+							'$regex': req.query.filter
+						}
+					}]
+				}, 'geojson', cb);
+			} else if (req.query.gpb_type == 'watershed') {
+				this.data.query(res, 'sites', {
+					'$and': [{
+						'properties.gpb_type': req.query.gpb_type
+					}, {
+						'properties.bmp_type': req.query.filter
+					}]
+				}, 'geojson', cb);
+			}
 		} else {
 			this.data.query(res, 'sites', {
 				'properties.gpb_type': req.query.gpb_type

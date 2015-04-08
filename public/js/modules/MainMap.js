@@ -27,6 +27,15 @@ var MainMap = React.createClass({
 			$(ev.target).addClass('selected');
 			ME.addGPBType(ev.target.classList[ev.target.classList.length - 2]);
 		});
+		$('.sitetypesel').on('change', 'select', function(evt) {
+			ME.refinementsSelected.call(ME, evt);
+		});
+		$('.location').on('click', 'li', function(evt) {
+			var el = $(evt.currentTarget),
+				lat = el.data('lat'),
+				lon = el.data('lon');
+			ME.map.setView([lon, lat], 16);
+		});
 	},
 	createMap: function() {
 		var ME = this;
@@ -71,14 +80,14 @@ var MainMap = React.createClass({
 			ME.addResultsList(inBounds);
 			change_photo_set(inBoundsSiteIds);
 
-
 		});
 	},
 	addResultsList: function(results) {
 		var html = '<ul>';
 		results.forEach(function(itm) {
-			var props = (itm.feature) ? itm.feature.properties : itm.properties;
-			html += '<li>' + ((props.url_sq) ? "<img width=50 src='" + props.url_m + "'>" : "") + '<b>' + props.site_name + '</b><br/>' + props.address + '</li>';
+			var props = (itm.feature) ? itm.feature.properties : itm.properties,
+				geom = (itm.feature) ? itm.feature.geometry : itm.geometry;
+			html += '<li data-lat=' + geom.coordinates[0] + ' data-lon=' + geom.coordinates[1] + '>' + ((props.url_sq) ? "<img width=50 src='" + props.url_m + "'>" : "") + '<b>' + props.site_name + '</b><br/>' + props.address + '</li>';
 		});
 		html += '</ul>';
 		$('#propdetails > .location').html(html);
@@ -118,24 +127,24 @@ var MainMap = React.createClass({
 		console.log(props);
 
 		if (props.site_id) {
-				if(props.gpb_type == 'cmos'){
-					var urls = get_photos_by_site(props.site_id,'CG');
-					html = "<h2>" + (props.site_name || "UNNAMED SITE") + "</h2></br>" +
+			if (props.gpb_type == 'cmos') {
+				var urls = get_photos_by_site(props.site_id, 'CG');
+				html = "<h2>" + (props.site_name || "UNNAMED SITE") + "</h2></br>" +
 					((urls) ? "<img width=200 src='" + urls[0] + "'>" : "<img width=200 src='/public/img/placeholder.png'>") + "</br>" +
 					"Location: " + (props.address || 'NO DATA') + "</br>" +
 					"Site Use: " + (props.site_use || "NO DATA") + "</br>" +
 					"Responsible Party: " + (props.resp_party || "NO DATA") + "</br>" +
 					"For more information, contact: " + (props.contact || "NO DATA");
 
-				}
-				if(props.gpb_type == 'stormwater'){
-					var urls = get_photos_by_site(props.site_id,'SW');
-					html = "<h2>" + (props.site_name || "UNNAMED SITE") + "</h2></br>" +
+			}
+			if (props.gpb_type == 'stormwater') {
+				var urls = get_photos_by_site(props.site_id, 'SW');
+				html = "<h2>" + (props.site_name || "UNNAMED SITE") + "</h2></br>" +
 					((urls) ? "<img width=200 src='" + urls[0] + "'>" : "<img width=200 src='/public/img/placeholder.png'>") + "</br>" +
 					"Location: " + (parseFloat(props.POINT_X).toFixed(6) + ", " + parseFloat(props.POINT_Y).toFixed(6) || 'NO DATA') + "</br>" +
 					"BMP Type: " + props.bmp_type + "</br>" +
 					"Status: " + (props.status || 'NO DATA');
-				}
+			}
 			this.popup
 				.setLatLng(e.latlng)
 				.setContent(html)
@@ -209,7 +218,7 @@ var MainMap = React.createClass({
 				"City Boundary": this.city,
 				"Watersheds": this.watersheds,
 				"Neighborhoods": this.neighborhoods,
-				"Csas":this.csas
+				"Csas": this.csas
 			}).addTo(this.map);
 		}
 	},
@@ -264,10 +273,18 @@ var MainMap = React.createClass({
 	boundsSize: function(bounds) {
 		return bounds.getNorthWest().distanceTo(bounds.getSouthEast()).toFixed(0);
 	},
-	addGPBType: function(type) {
-		var ME = this;
+	addGPBType: function(type, filter) {
+		this.currentType = type;
+		var ME = this,
+			url = "/api/sites?gpb_type=" + type;
+		if (filter) {
+			url = url + '&filter=' + filter;
+		}
+		var urlParts = url.split('?');
+		$('.downloadgeojson').attr('href', urlParts[0] + '.geojson?' + urlParts[1]);
+		$('.downloadcsv').attr('href', urlParts[0] + '.csv?' + [1]);
 		$.ajax({
-			url: "/api/sites?gpb_type=" + type
+			url: url
 		}).done(function(data) {
 			if (data.features.length === 0) {
 				return;
@@ -289,7 +306,32 @@ var MainMap = React.createClass({
 				onEachFeature: ME.onEachFeature
 			}).addTo(ME.map);
 			ME.map.fitBounds(ME.gpbtype.getBounds());
+			if (!filter) {
+				if (type == 'stormwater') {
+					ME.addFilterSelect("/api/refinements?type=stormwater&field=bmp_type", "Use");
+				} else if (type == 'cmos') {
+					ME.addFilterSelect("/api/refinements?type=cmos&field=site_use", "Use");
+				}
+			}
 		});
+	},
+	addFilterSelect: function(url, label) {
+		$('#filter').remove();
+		$('label[for=filter]').remove();
+		$.ajax({
+			url: url
+		}).done(function(data) {
+			var sel = "<label for='filter'>" + label + ": &nbsp;</label><select id='filter'><option>Select an option</option>";
+			data.data.forEach(function(itm) {
+				sel = sel + "<option value='" + itm + "'>" + itm + "</option>";
+			});
+			sel = sel + "</select>";
+			$('.sitetypesel').append(sel);
+		});
+	},
+	refinementsSelected: function(evt) {
+		var val = $(evt.target).val();
+		this.addGPBType(this.currentType, val);
 	},
 	onEachFeature: function(feature, layer) {
 		layer.on({

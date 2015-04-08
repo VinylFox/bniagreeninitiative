@@ -17,8 +17,37 @@ app.get('/api/:type', function(req, res) {
   var api = new Api({
     mongoUri: mongoUri
   });
+  var type = req.params.type,
+    typeParts = type.split('.'),
+    ext;
+  if (typeParts.length > 1) {
+    type = typeParts[0];
+    ext = typeParts[1];
+  }
+  req.params.type = type;
   var cb = function(resp) {
-    res.json(resp);
+    if (!ext || ext === 'geojson') {
+      res.json(resp);
+    } else {
+      if (resp && resp.features) {
+        var csv = '',
+          headerArr = [],
+          itemArr = [];
+        for (prop in resp.features[0].properties) {
+          headerArr.push(prop);
+        }
+        csv = csv + headerArr.join(',') + '\r\n';
+        resp.features.forEach(function(itm) {
+          for (prop in itm.properties) {
+            itemArr.push('"' + itm.properties[prop] + '"');
+          }
+          csv = csv + itemArr.join(',') + '\r\n';
+          itemArr = [];
+        });
+        res.set('Content-Type', 'application/octet-stream');
+        res.send(csv);
+      }
+    }
   };
   switch (req.params.type) {
     case "watersheds":
@@ -28,7 +57,7 @@ app.get('/api/:type', function(req, res) {
       api.neighborhoods(req, res, cb);
       break;
     case "csas":
-      api.csas(req,res,cb);
+      api.csas(req, res, cb);
       break;
     case "sites":
       api.sites(req, res, cb);

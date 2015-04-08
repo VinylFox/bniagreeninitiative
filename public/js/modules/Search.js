@@ -78,7 +78,7 @@ var Search = React.createClass({
 				React.DOM.input({
 					onChange: this.onChange,
 					value: this.state.term,
-					placeholder: 'Address or Keyword'
+					placeholder: 'Address, Zip or Keyword'
 				})
 			)
 		);

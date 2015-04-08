@@ -13,6 +13,7 @@ block content
         div.search-title Search:
         div#search
       div.sitetypesel
+        span.typelabel Type: 
         a.sel.icon.cmos(title="Community Managed Open Space")
         a.sel.icon.stormwater(title="Stormwater Management")
         a.sel.inactive.icon.cleangreen(title="Clean & Green")
@@ -21,10 +22,13 @@ block content
         a.sel.inactive.icon.greenparking(title="Green Parking")
         a.sel.inactive.icon.urbanag(title="Urban Agriculture")
         a.sel.inactive.icon.urbanforest(title="Urban Forrest")
+        div(style='clear: both;')
       div.location
-        div.blocklot
-        div.address
-      div.pano#pano
+      div.pano
+        span Download Data: 
+        a.downloadgeojson(href="/api/sites.geojson", target="_blank") GeoJson
+        , 
+        a.downloadcsv(href="/api/sites.csv", target="_blank") CSV
       div.owner
       div.viol
       div.legal
