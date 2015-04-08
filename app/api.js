@@ -50,12 +50,14 @@ Api.prototype.sites = function(req, res, cb) {
 						}
 					}]
 				}, 'geojson', cb);
-			} else if (req.query.gpb_type == 'watershed') {
+			} else if (req.query.gpb_type == 'stormwater') {
 				this.data.query(res, 'sites', {
 					'$and': [{
 						'properties.gpb_type': req.query.gpb_type
 					}, {
-						'properties.bmp_type': req.query.filter
+						'properties.bmp_type': {
+							'$regex': req.query.filter
+						}
 					}]
 				}, 'geojson', cb);
 			}
